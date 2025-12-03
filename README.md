@@ -8,7 +8,7 @@ The model will learn the temperature patterns, and automatically identify the ar
 
 ## 1. Problem Statement
 - **Goal**: Automatically identify heat-prone areas by classifying each 16×16 LST patch as UHI (1) or non-UHI (0).
-- **Why it matters**: UHIs make cities hotter, increase energy demand, and can create health risks during heat waves.   Simple thresholding often mislabels hot pixels or cloud noise as UHIs because it doesn’t consider spatial context. A model that understands the “shape” of heat can give much more reliable results.
+- **Why it matters**: UHIs make cities hotter, increase energy demand, and can make health risks during heat waves.   Simple thresholding often mislabels hot pixels or cloud noise as UHIs because it doesn’t consider spatial context. A model that understands the “shape” of heat can give much more reliable results.
 - **Approach**: Train a CNN model to learn spatial temperature patterns such as clusters, gradients, coherence rather than relying on a single cutoff temperature.
 - **Study Area**: DMV metro area (≈38.2–39.8°N, 77.8–76.0°W)
 
@@ -49,8 +49,7 @@ Implemented in `notebook/batch_preprocess.ipynb`.
    - Otherwise → label **0 (non-UHI)**  
 
 5. **Build the final datasets**  
-   After processing each day, I save the patches and labels as `.npy` files  
-   (e.g., `patches_day205_sw.npy`).  
+   After processing each day, I save the patches and labels as `.npy` files  (e.g., `patches_day205_sw.npy`).  
    Then I merge six days into a **training set** and keep day **215** as the **validation set**.
 
 ---
@@ -71,14 +70,12 @@ Linear(64→2) → logits (CrossEntropyLoss handles softmax)
 - Batch size: 64
 - Epochs: 15
 - Input normalization: replace NaNs with patch mean, then Z-score using training-set mean/std.
-- Carbon tracking: CodeCarbon `EmissionsTracker` wraps the epoch loop (log stored at `results/emissions.csv`).
 
 ---
 
 ## 5. Evaluation
 
 All evaluation is done on **day 215**, which the model never saw during training.  
-This gives a good sense of how well it generalizes to new temperature patterns.
 
 ### Overall Performance
 
@@ -118,7 +115,6 @@ The loss curves and accuracy curve look smooth and stable:
 ### ROC Curve
 
 The ROC curve reaches **AUC = 1.0**, which basically means the model can almost perfectly distinguish UHI vs. non-UHI patches based on their predicted probabilities.  
-This is expected since UHI patches have very clean and consistent temperature structure compared to noise or scattered hot pixels.
 
 ![ROC Curve](./results/ROC_Curve.png)
 
@@ -172,7 +168,7 @@ This means the model is cheap to retrain, environmentally friendly, and easy to 
    conda activate uhi
    ```
 2. **Download raw LST scenes**  
-   Place `gf_Day2020_<DAY>.tif` files in `data/raw/`.  
+   Place `gf_Day2020_<DAY>.tif` files in `data/raw/`.   (187,196,205,215,212,223,240)
     - https://iastate.figshare.com/articles/dataset/A_seamless_1_km_resolution_global_daytime_1_30_PM_land_surface_temperature_dataset_in_2020/14885825
 3. **Run preprocessing**  
    Open `notebook/batch_preprocess.ipynb` and execute all cells:
@@ -185,7 +181,6 @@ This means the model is cheap to retrain, environmentally friendly, and easy to 
    - Trains the CNN (CodeCarbon logs automatically)
    - Generates metrics/plots/Grad-CAM
 5. **Document carbon cost & results**  
-   - Report metrics in poster/paper
    - Summarize emissions from `results/emissions.csv`
 
 ---
