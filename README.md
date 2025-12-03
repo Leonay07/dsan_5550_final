@@ -32,11 +32,11 @@ The model will learn the temperature patterns, and automatically identify the ar
 Implemented in `notebook/batch_preprocess.ipynb`.
 
 1. **Clip to the DMV region**  
-   Each raw GeoTIFF is cropped to a fixed bounding box around the DC/DMV area.  
+   Each raw GeoTIFF is cropped to a fixed bounding box around the DMV area.  
    Any invalid or missing values (≤0) are turned into `NaN` so they can be handled later.
 
 2. **Extract patches**  
-   I slide a **16×16** window (stride **8**) across the clipped image to create lots of overlapping patches.  
+   I slide a **16×16** window (stride **8**) across the clipped image to create overlapping patches.  
    Earlier I tried much larger patches (like 128×128), but they produced too few samples.  
    The 16×16 size gives a nice balance: many samples, but still enough spatial structure for the CNN to learn from.
 
@@ -151,7 +151,6 @@ This means the model is cheap to retrain, environmentally friendly, and easy to 
 ├── results/
 │   ├── emissions.csv            
 │   ├── confusion_matrix.png
-│   ├── emissions.csv
 │   ├── Loss_Curve.png
 │   ├── ROC_Curve.png
 │   └── Validation_Accuracy.png
